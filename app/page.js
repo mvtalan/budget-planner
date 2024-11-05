@@ -1,101 +1,82 @@
-import Image from "next/image";
+"use client"
+
+import {currencyFormatter} from '@/lib/utils'
+
+import ExpenseCategoryItem from '@/components/ExpenseCategoryItem';
+
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from 'react-chartjs-2';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const DUMMY_DATA = [
+  {
+    id: 1,
+    title: "Entertainment",
+    color: "#000",
+    total: 500
+  },
+  {
+    id: 1,
+    title: "Gas",
+    color: "#000",
+    total: 100
+  },
+  {
+    id: 1,
+    title: "Movies",
+    color: "#000",
+    total: 120
+  },
+]
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  return ( 
+    <main className="container max-w-2xl px-6 mx-auto">
+      <section className="py-3">
+        <small className="text-gray-400 text-md">My Balance</small>
+        <h2 className="text-4xl font-bold">{currencyFormatter(100000)}</h2>
+      </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <section className="flex items-center gap-2 py-3">
+        <button className="btn btn-primary">+ Expenses</button>
+        <button className="btn btn-primary-outline">+ Income</button>
+      </section>
+
+      {/* Expenses */}
+      <section>
+        <h3 className='text-2xl'>My Expenses</h3>
+        <div className='flex flex-col gap-4 mt-6'>
+          {DUMMY_DATA.map((expense) => {
+            return (
+              <ExpenseCategoryItem 
+                color={expense.color} 
+                title={expense.title}
+                total={expense.total}
+              />
+            );
+          })}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* Chart Section */}
+      <section className='py-6'>
+          <h3 className='text-2xl'>Statistics</h3>
+          <div className='w-1/2 mx-auto'>
+            <Doughnut data={{
+              labels: DUMMY_DATA.map(expense => expense.title),
+              datasets: [
+                {
+                  label: "Expenses",
+                  data: DUMMY_DATA.map( expense => expense.total),
+                  backgroundColor: DUMMY_DATA.map( expense => expense.color),
+                  borderColor: ['#18181b'],
+                  borderWidth: 5
+                }
+              ]  
+            }}  />
+          </div>
+      </section>    
+    </main>
   );
 }
